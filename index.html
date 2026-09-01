@@ -69,8 +69,7 @@ input{font-family:inherit;font-size:inherit}
 .appbar{
   position:sticky;top:0;z-index:40;
   padding:calc(var(--safe-t) + 12px) 16px 12px;
-  background:color-mix(in srgb,var(--bg) 82%,transparent);
-  backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);
+  background:var(--bg);
   display:flex;align-items:center;gap:12px;border-bottom:1px solid transparent;transition:border-color .2s;
 }
 .appbar.scrolled{border-color:var(--border)}
@@ -89,8 +88,7 @@ main{padding:8px 16px calc(96px + var(--safe-b));animation:fade .25s ease}
 .tabbar{
   position:fixed;left:0;right:0;bottom:0;z-index:50;
   padding:6px 8px calc(6px + var(--safe-b));
-  background:color-mix(in srgb,var(--surface) 90%,transparent);
-  backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);
+  background:var(--surface);
   border-top:1px solid var(--border);
   display:flex;justify-content:center;
 }
