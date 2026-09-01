@@ -7,6 +7,13 @@
 <meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mikrobiologjia">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="application-name" content="Mikrobiologjia">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Mikrobiologjia — Banka e Pyetjeve</title>
 <style>
 /* ============ THEME TOKENS ============ */
@@ -337,17 +344,22 @@ function load(){
     var p=JSON.parse(localStorage.getItem(NS+'.prefs')); if(p) prefs=Object.assign(prefs,p);
   }catch(e){}
 }
-var saveT;
-function persist(){
+function flush(){
   try{
-    clearTimeout(saveT);
-    saveT=setTimeout(function(){
-      try{ localStorage.setItem(NS+'.store', JSON.stringify(store));
-           localStorage.setItem(NS+'.prefs', JSON.stringify(prefs)); }catch(e){}
-    },120);
+    localStorage.setItem(NS+'.store', JSON.stringify(store));
+    localStorage.setItem(NS+'.prefs', JSON.stringify(prefs));
   }catch(e){}
 }
+var saveT;
+function persist(){
+  try{ clearTimeout(saveT); saveT=setTimeout(flush,120); }catch(e){ flush(); }
+}
 load();
+/* Save immediately whenever the app is closed, backgrounded, or the tab is hidden,
+   so progress is never lost — even in the WhatsApp in-app browser. */
+window.addEventListener('pagehide', flush);
+window.addEventListener('beforeunload', flush);
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden') flush(); });
 
 /* =========================================================
    HELPERS
@@ -507,6 +519,7 @@ function renderStudy(){
   if(st.i>=st.ids.length) st.i=st.ids.length-1;
   var q = qById(st.ids[st.i]);
   store.seen[q.id]=1;
+  store.last={cat:st.cat, filter:st.filter, qid:q.id};
   var c=CAT_BY[q.cat]||{color:'var(--primary)',short:q.cat};
   var learned=!!store.learned[q.id], saved=!!store.saved[q.id];
 
@@ -900,7 +913,10 @@ function bindView(){
   $$('[data-cat]').forEach(function(b){ b.onclick=function(){ startStudy(b.getAttribute('data-cat')); }; });
   $$('[data-open]').forEach(function(b){ b.onclick=function(){ openInStudy(b.getAttribute('data-open')); }; });
   $$('[data-unsave]').forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); store.saved[b.getAttribute('data-unsave')]=0; persist(); render(); }; });
-  act('continue', function(){ startStudy('all',{filter:'unlearned'}); });
+  act('continue', function(){
+    if(store.last && store.last.qid) startStudy(store.last.cat||'all',{filter:store.last.filter||'all',startAt:store.last.qid});
+    else startStudy('all',{filter:'unlearned'});
+  });
   act('quick-quiz', function(){ startQuiz({cat:'all',n:10,style:'mcq'}); });
   act('random-study', function(){ startStudy('all',{shuffle:true}); });
   act('quiz-setup', function(){ state.quiz=null; go('quiz'); });
