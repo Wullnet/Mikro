@@ -872,7 +872,7 @@ function openSettings(){
   // theme
   h+='<div class="set-row"><div class="si">'+svg('moon')+'</div><div class="st"><b>Tema</b><span>Pamja e aplikacionit</span></div>';
   h+='<div class="seg" style="width:180px">';
-  [['auto','Auto'],['light','E ndritshme'],['dark','E errët']].forEach(function(o){ h+='<button class="'+(prefs.theme===o[0]?'active':'')+'" data-theme="'+o[0]+'" style="padding:8px 4px;font-size:.78rem">'+o[1]+'</button>'; });
+  [['auto','Auto'],['light','Çelët'],['dark','Errët']].forEach(function(o){ h+='<button class="'+(prefs.theme===o[0]?'active':'')+'" data-theme="'+o[0]+'" style="padding:8px 4px;font-size:.82rem">'+o[1]+'</button>'; });
   h+='</div></div>';
   // font size
   h+='<div class="set-row"><div class="si">'+svg('type')+'</div><div class="st"><b>Madhësia e tekstit</b><span>'+Math.round(prefs.fs*100)+'%</span></div>';
