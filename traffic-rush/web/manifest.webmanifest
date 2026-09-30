@@ -1,0 +1,16 @@
+{
+  "name": "Traffic Rush",
+  "short_name": "Traffic Rush",
+  "description": "Lojë me makina: shmang trafikun në autostradën Tiranë–Durrës.",
+  "lang": "sq",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#121419",
+  "theme_color": "#121419",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

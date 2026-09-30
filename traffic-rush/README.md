@@ -10,6 +10,15 @@ Lojë endless runner me makina për iOS dhe Android, e ndërtuar me **Unity 6**.
 
 > Nëse ke version tjetër të Unity 6, Hub-i të pyet ta hapësh me atë version — prano.
 
+## Luaje në telefon tani (versioni web)
+Folderi `web/` ka të njëjtën lojë në HTML5 + Three.js (3D), që hapet në Safari/Chrome pa instalim:
+- Rregullat, makinat, hartat dhe misionet janë të njëjta me versionin Unity; ruajtja bëhet në `localStorage`.
+- Pa reklama/blerje: "Vazhdo" jepet falas një herë për lojë.
+- Kontrolli: rrëshqit ose prek majtas/djathtas; në kompjuter shigjetat ose A/D.
+- Si app në iPhone: pasi `web/` të jetë në GitHub Pages (merge në `main`), hape
+  `https://wullnet.github.io/Mikro/traffic-rush/web/` në Safari → Share → **Add to Home Screen**.
+- Provë lokale: `cd traffic-rush/web && python3 -m http.server` dhe hap `http://localhost:8000`.
+
 ## Build
 **Android (Google Play)**
 1. File → Build Profiles → Android → Switch Platform.
