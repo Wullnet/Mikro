@@ -1,0 +1,123 @@
+# Traffic Rush — Unity 6 builds (Android AAB + iOS Xcode project) with game-ci.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   UNITY_LICENSE   content of the Unity .ulf license file (Personal: see https://game.ci/docs/github/activation)
+#   UNITY_EMAIL     Unity account email
+#   UNITY_PASSWORD  Unity account password
+# Optional (Android upload key; without them the AAB is debug-signed and cannot be uploaded to Play):
+#   TR_KEYSTORE_BASE64  base64 of the upload keystore (base64 -w0 upload.keystore)
+#   TR_KEYSTORE_PASS    keystore password
+#   TR_KEY_ALIAS        key alias
+#   TR_KEY_PASS         key password
+#
+# Without UNITY_LICENSE the build job is skipped (not failed).
+
+name: Traffic Rush build
+
+on:
+  push:
+    paths:
+      - "traffic-rush/**"
+      - ".github/workflows/traffic-rush.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: traffic-rush-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check-secrets:
+    name: Check Unity secrets
+    runs-on: ubuntu-latest
+    outputs:
+      has-unity: ${{ steps.check.outputs.has-unity }}
+    steps:
+      - id: check
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          if [ -n "$UNITY_LICENSE" ] && [ -n "$UNITY_EMAIL" ] && [ -n "$UNITY_PASSWORD" ]; then
+            echo "has-unity=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-unity=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Traffic Rush::UNITY_LICENSE / UNITY_EMAIL / UNITY_PASSWORD not set - Unity build skipped."
+          fi
+
+  build:
+    name: Build ${{ matrix.targetPlatform }}
+    needs: check-secrets
+    if: needs.check-secrets.outputs.has-unity == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - targetPlatform: Android
+            buildMethod: TrafficRush.EditorTools.BuildScript.BuildAndroid
+            output: traffic-rush/Builds/Android
+          - targetPlatform: iOS
+            buildMethod: TrafficRush.EditorTools.BuildScript.BuildIOS
+            output: traffic-rush/Builds/iOS
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Free disk space (Android SDK/NDK images are large)
+        if: matrix.targetPlatform == 'Android'
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: false
+          swap-storage: false
+
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: traffic-rush/Library
+          key: Library-${{ matrix.targetPlatform }}-${{ hashFiles('traffic-rush/Assets/**', 'traffic-rush/Packages/**', 'traffic-rush/ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ matrix.targetPlatform }}-
+            Library-
+
+      - name: Build with Unity
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: traffic-rush
+          unityVersion: auto
+          targetPlatform: ${{ matrix.targetPlatform }}
+          buildMethod: ${{ matrix.buildMethod }}
+          # Version name comes from PlayerSettings (0.1.0 in ProjectSetup.cs); the build number from the run number.
+          versioning: None
+          androidVersionCode: ${{ github.run_number }}
+          androidExportType: androidAppBundle
+          # game-ci decodes the keystore into traffic-rush/<androidKeystoreName> and passes
+          # -androidKeystoreName/-androidKeystorePass/-androidKeyaliasName/-androidKeyaliasPass,
+          # which BuildScript.cs reads when the TR_* environment variables are absent.
+          androidKeystoreName: ${{ matrix.targetPlatform == 'Android' && 'tr-upload.keystore' || '' }}
+          androidKeystoreBase64: ${{ matrix.targetPlatform == 'Android' && secrets.TR_KEYSTORE_BASE64 || '' }}
+          androidKeystorePass: ${{ matrix.targetPlatform == 'Android' && secrets.TR_KEYSTORE_PASS || '' }}
+          androidKeyaliasName: ${{ matrix.targetPlatform == 'Android' && secrets.TR_KEY_ALIAS || '' }}
+          androidKeyaliasPass: ${{ matrix.targetPlatform == 'Android' && secrets.TR_KEY_PASS || '' }}
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrafficRush-${{ matrix.targetPlatform }}-${{ github.run_number }}
+          path: ${{ matrix.output }}
+          if-no-files-found: error
+          retention-days: 14

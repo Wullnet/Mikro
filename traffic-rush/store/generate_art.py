@@ -249,6 +249,8 @@ if __name__ == "__main__":
     fg.save(os.path.join(ICON_DIR, "icon-foreground-432.png"), optimize=True)
     bg.save(os.path.join(ICON_DIR, "icon-background-432.png"), optimize=True)
     make_feature().save(os.path.join(STORE_DIR, "feature-graphic.png"), optimize=True)
+    # Google Play listing icon: 512x512, 32-bit PNG
+    icon.convert("RGBA").resize((512, 512), Image.LANCZOS).save(os.path.join(STORE_DIR, "play-icon-512.png"), optimize=True)
     # previews (scratch): small icon, and adaptive composite with circle mask
     scratch = os.environ.get("PREVIEW_DIR")
     if not scratch:
