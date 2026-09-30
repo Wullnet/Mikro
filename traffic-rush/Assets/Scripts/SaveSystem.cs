@@ -9,6 +9,7 @@ namespace TrafficRush
         const string BestKey = "tr_best";
         const string UnlockedKey = "tr_unlocked";
         const string SelectedKey = "tr_selected";
+        const string NoAdsKey = "tr_noads";
 
         public static int Coins
         {
@@ -26,6 +27,13 @@ namespace TrafficRush
         {
             get => Mathf.Clamp(PlayerPrefs.GetInt(SelectedKey, 0), 0, CarCatalog.Cars.Length - 1);
             set { PlayerPrefs.SetInt(SelectedKey, value); PlayerPrefs.Save(); }
+        }
+
+        /// <summary>True pasi lojtari ka blerë "Pa reklama" (hiq interstitial-et; reklamat me shpërblim mbeten).</summary>
+        public static bool NoAds
+        {
+            get => PlayerPrefs.GetInt(NoAdsKey, 0) == 1;
+            set { PlayerPrefs.SetInt(NoAdsKey, value ? 1 : 0); PlayerPrefs.Save(); }
         }
 
         // Makina e parë është gjithmonë e hapur (bit 0).
