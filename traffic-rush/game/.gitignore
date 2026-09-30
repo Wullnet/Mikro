@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.vite/
+ios/App/Pods/
+android/.gradle/
+android/app/build/
