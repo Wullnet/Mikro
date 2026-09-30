@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace TrafficRush
 {
@@ -24,6 +26,9 @@ namespace TrafficRush
         int lastFreeLane = 1;
 
         public bool Spawning { get; set; }
+
+        /// <summary>Lojtari kaloi shumë afër një makine pa u përplasur.</summary>
+        public event Action NearMiss;
 
         public void Init(PlayerCar target)
         {
@@ -74,10 +79,36 @@ namespace TrafficRush
 
             // Riciklo çfarë ka mbetur prapa.
             float limit = pz - GameConfig.DespawnBehind;
+            bool check = player.Driving && player.Box != null;
             foreach (var c in cars)
-                if (c.gameObject.activeSelf && c.transform.position.z < limit) c.gameObject.SetActive(false);
+            {
+                if (!c.gameObject.activeSelf) continue;
+                if (check && !c.Passed) CheckNearMiss(c, pz);
+                if (c.transform.position.z < limit) c.gameObject.SetActive(false);
+            }
             foreach (var c in coins)
                 if (c.activeSelf && c.transform.position.z < limit) c.SetActive(false);
+        }
+
+        // Ndërsa lojtari është krah makinës (dhe sapo ka ndërruar korsi) mbahet hapësira anësore më e vogël;
+        // kur makina mbetet krejt prapa, nëse hapësira ishte e vogël → near-miss.
+        void CheckNearMiss(TrafficCar c, float pz)
+        {
+            var b = c.Box;
+            var pb = player.Box;
+            Vector3 cp = c.transform.position;
+            float reach = b.size.z / 2 + pb.size.z / 2;
+            float dz = cp.z + b.center.z - pz;
+            if (dz >= reach) return;
+            if (dz > -reach)
+            {
+                float gap = Mathf.Abs(cp.x - player.transform.position.x) - (b.size.x / 2 + pb.size.x / 2);
+                bool dodging = Time.time - player.LastLaneChangeTime < GameConfig.NearMissWindow;
+                if (dodging && gap < c.MinGap) c.MinGap = gap;
+                return;
+            }
+            c.Passed = true;
+            if (c.MinGap < GameConfig.NearMissGap) NearMiss?.Invoke();
         }
 
         void SpawnRow(float z, float gapToNext)
@@ -102,8 +133,8 @@ namespace TrafficRush
                 SpawnCar(blocked, z);
             }
 
-            // Monedhat shkojnë në korsinë e lirë, mes këtij rreshti dhe tjetrit (makina ka gjatësi ~4 m).
-            int coinCount = Mathf.Min(GameConfig.CoinsPerLine, Mathf.FloorToInt((gapToNext - 6f) / GameConfig.CoinSpacing) + 1);
+            // Monedhat shkojnë në korsinë e lirë, mes këtij rreshti dhe tjetrit (makina 4 m, kamioni 6.5 m).
+            int coinCount = Mathf.Min(GameConfig.CoinsPerLine, Mathf.FloorToInt((gapToNext - 7.5f) / GameConfig.CoinSpacing) + 1);
             if (coinCount > 0 && Random.value < 0.45f) SpawnCoinLine(freeLane, z + 3f, coinCount);
         }
 
@@ -116,7 +147,10 @@ namespace TrafficRush
             if (car == null)
             {
                 var color = TrafficColors[Random.Range(0, TrafficColors.Length)];
-                var go = CarFactory.Build("Traffic", color, transform);
+                // Pak larmi: disa furgona dhe kamionë (collider-i ndjek madhësinë).
+                float r = Random.value;
+                var body = r < 0.08f ? CarBody.Truck : r < 0.22f ? CarBody.Van : CarBody.Sedan;
+                var go = CarFactory.Build("Traffic", color, transform, body);
                 car = go.AddComponent<TrafficCar>();
                 cars.Add(car);
             }

@@ -13,6 +13,9 @@ namespace TrafficRush
         public float Speed { get; private set; }
         public bool Driving { get; private set; }
         public float Distance => transform.position.z - startZ;
+        public float TopSpeed => def.TopSpeed;
+        public BoxCollider Box { get; private set; }
+        public float LastLaneChangeTime { get; private set; } = -10f;
 
         CarDef def;
         Rigidbody rb;
@@ -36,13 +39,15 @@ namespace TrafficRush
         {
             def = car;
             if (model != null) Destroy(model);
-            model = CarFactory.Build("Model", car.Color, transform);
-            model.GetComponent<BoxCollider>().isTrigger = true;
+            model = CarFactory.Build("Model", car.Color, transform, CarBody.Sedan, car.Spoiler);
+            Box = model.GetComponent<BoxCollider>();
+            Box.isTrigger = true;
         }
 
         public void ResetTo(Vector3 position)
         {
             lane = 1;
+            LastLaneChangeTime = -10f;
             Speed = 0f;
             Driving = false;
             rb.position = position;
@@ -66,7 +71,8 @@ namespace TrafficRush
 
         void Update()
         {
-            if (!Driving) return;
+            // Në pauzë (timeScale = 0) mos lexo input, që prekjet e butonave të mos ndërrojnë korsi.
+            if (!Driving || Time.timeScale == 0f) { pressing = false; return; }
             HandleInput();
             Speed = Mathf.Min(def.TopSpeed, Speed + GameConfig.Acceleration * Time.deltaTime);
         }
@@ -115,7 +121,11 @@ namespace TrafficRush
 
         void ChangeLane(int dir)
         {
-            lane = Mathf.Clamp(lane + dir, 0, GameConfig.Lanes.Length - 1);
+            int next = Mathf.Clamp(lane + dir, 0, GameConfig.Lanes.Length - 1);
+            if (next == lane) return;
+            lane = next;
+            LastLaneChangeTime = Time.time;
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayLaneChange();
         }
 
         void OnTriggerEnter(Collider other)

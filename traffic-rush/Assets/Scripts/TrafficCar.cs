@@ -7,6 +7,12 @@ namespace TrafficRush
     public class TrafficCar : MonoBehaviour
     {
         public float Speed;
+        public BoxCollider Box { get; private set; }
+
+        // Near-miss: hapësira anësore më e vogël ndërsa lojtari ishte krah saj, dhe nëse u kontrollua.
+        public float MinGap;
+        public bool Passed;
+
         Rigidbody rb;
 
         void Awake()
@@ -14,11 +20,14 @@ namespace TrafficRush
             rb = GetComponent<Rigidbody>();
             rb.isKinematic = true;
             rb.useGravity = false;
+            Box = GetComponent<BoxCollider>();
         }
 
         public void Place(Vector3 position, float speed)
         {
             Speed = speed;
+            MinGap = float.MaxValue;
+            Passed = false;
             rb.position = position;
             transform.position = position;
             gameObject.SetActive(true);

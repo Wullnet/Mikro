@@ -26,6 +26,13 @@ namespace TrafficRush
         // Monedhat
         public const int CoinsPerLine = 5;
         public const float CoinSpacing = 2.5f;
+
+        // Near-miss: kalon krah një makine me hapësirë anësore (mes anëve) më të vogël se NearMissGap,
+        // duke ndërruar korsi afër saj (brenda NearMissWindow sekondash). Pa këtë kusht, çdo makinë
+        // në korsinë ngjitur do numërohej (hapësira mes korsive është vetëm ~0.9 m).
+        public const float NearMissGap = 1.2f;
+        public const float NearMissWindow = 0.6f;
+        public const int NearMissBonus = 50;
     }
 
     [System.Serializable]
@@ -36,10 +43,11 @@ namespace TrafficRush
         public Color Color;
         public float TopSpeed;    // m/s
         public float Handling;    // sa shpejt ndërron korsi
+        public bool Spoiler;      // krah prapa (makinat sportive)
 
-        public CarDef(string name, int price, Color color, float topSpeed, float handling)
+        public CarDef(string name, int price, Color color, float topSpeed, float handling, bool spoiler = false)
         {
-            Name = name; Price = price; Color = color; TopSpeed = topSpeed; Handling = handling;
+            Name = name; Price = price; Color = color; TopSpeed = topSpeed; Handling = handling; Spoiler = spoiler;
         }
     }
 
@@ -50,8 +58,8 @@ namespace TrafficRush
             new CarDef("Golf Dyshi",   0,    new Color(0.85f, 0.15f, 0.15f), 32f, 10f),
             new CarDef("Benz 190",     250,  new Color(0.95f, 0.95f, 0.95f), 36f, 11f),
             new CarDef("Audi A4",      600,  new Color(0.15f, 0.25f, 0.8f),  40f, 12.5f),
-            new CarDef("BMW M3",       1200, new Color(0.1f, 0.1f, 0.1f),    45f, 14f),
-            new CarDef("Porsche 911",  2500, new Color(1f, 0.75f, 0.05f),    52f, 16f),
+            new CarDef("BMW M3",       1200, new Color(0.1f, 0.1f, 0.1f),    45f, 14f, true),
+            new CarDef("Porsche 911",  2500, new Color(1f, 0.75f, 0.05f),    52f, 16f, true),
         };
     }
 }

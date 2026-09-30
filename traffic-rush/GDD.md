@@ -40,6 +40,21 @@ Garanci: çdo rresht lë të paktën një korsi të lirë, dhe korsia e lirë l�
 
 Balanca ndryshohet në `Assets/Scripts/GameConfig.cs`.
 
+## Near-miss
+Kur lojtari ndërron korsi dhe kalon krah një makine me < 1.2 m hapësirë anësore (brenda 0.6 s nga ndërrimi i korsisë) pa u përplasur: **+50 pikë**, tekst "NEAR MISS! +50" dhe zë. Rezultati = distanca (m) + bonuset.
+
+## Hartat
+| Harta | Hapet me rekord | Pamja |
+|---|---|---|
+| Tiranë – Durrës | falas | ditë, pemë të rrumbullakëta |
+| Llogara | 1500 m | mal: shkëmbinj, pisha, guardrail, mur mali që "gjarpëron" |
+| Prishtinë natën | 3000 m | natë: mjegull blu e errët, fenerë të ndezur, shtylla me llamba të verdha, ndërtesa |
+
+Zgjidhet në menu me shigjetat nën titull; zgjedhja ruhet.
+
+## Misionet ditore
+3 misione në ditë, të zgjedhura nga data (p.sh. "Mblidh 30 monedha në një lojë", "Bëj 5 near-miss në një lojë", "Arri 2000 m", "Luaj 3 lojëra"). Çdo mision jep 80–200 monedha, merren te ekrani MISIONET. Progresi rifillon çdo ditë.
+
 ## Monetizimi (faza 2)
 - **Rewarded ad** për "Vazhdo" (AdMob) — tashmë i lidhur te `AdsService.ShowRewarded`.
 - **Interstitial** çdo 3 Game Over (jo më shpesh).
@@ -49,7 +64,7 @@ Balanca ndryshohet në `Assets/Scripts/GameConfig.cs`.
 | Faza | Përmbajtja | Statusi |
 |---|---|---|
 | 1. Prototip | Loop-i i plotë me forma primitive, UI bazë, ruajtje, garazh | ✅ |
-| 2. Art & zë | Modele 3D makinash (low-poly), zëra motori/përplasje, muzikë, UI e dizajnuar | ⏳ |
-| 3. Përmbajtje | Harta të tjera (Llogara, Prishtinë natën), misione ditore, near-miss bonus | ⏳ |
+| 2. Art & zë | Zëra motori/përplasje/monedha + muzikë (procedurale) ✅, makina primitive me fenerë/spoiler/furgona/kamionë ✅; modele 3D low-poly dhe UI e dizajnuar ⏳ | 🟡 |
+| 3. Përmbajtje | Harta të tjera (Llogara, Prishtinë natën), misione ditore, near-miss bonus | ✅ |
 | 4. Monetizim | AdMob, IAP, analytics (Firebase) | ⏳ |
 | 5. Publikim | Ikona, screenshots, privacy policy, TestFlight + Play Internal Testing, release | ⏳ |
