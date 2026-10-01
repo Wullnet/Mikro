@@ -69,7 +69,7 @@ const focus = new THREE.Vector3();
 let yaw = Math.PI, pitch = 0;
 const sp = city.playerSpawn;
 const pos = new THREE.Vector3();
-if (view === 'street' || view === 'night') { pos.set(605.4, 4.5, 668); yaw = Math.PI - 0.12; pitch = -0.07; }
+if (view === 'street' || view === 'night') { pos.set(605.4, 4.5, 656); yaw = Math.PI - 0.12; pitch = -0.07; }
 else if (view === 'spawn') { pos.set(sp.x - Math.sin(sp.heading) * 7, 4.5, sp.z - Math.cos(sp.heading) * 7); yaw = sp.heading; pitch = -0.12; }
 else if (view === 'aerial') { pos.set(470, 190, 830); yaw = Math.atan2(640 - 470, 560 - 830); pitch = -0.5; }
 if (view === 'top') {

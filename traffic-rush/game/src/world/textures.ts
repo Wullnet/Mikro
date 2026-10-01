@@ -452,9 +452,11 @@ diffuseColor.rgb *= tx.rgb * mix(vTint, vec3(1.0), win);`)
 { float sc = vTile.z > 0.09 ? 4.0 : 1.0;
   vec2 cell = floor(vAUv * sc + 0.001) + vec2(vW.x * 7.31, vW.x * 3.17);
   float hh = hsh(cell);
-  float lit = step(hh, vW.y) * uNight;
+  // larg: dritaret janë nën piksel → mesatare (pa vezullim)
+  float fw = length(fwidth(vAUv * sc)); float fade = smoothstep(0.18, 0.5, fw);
+  float lit = mix(step(hh, vW.y), vW.y * 0.8, fade) * uNight;
   vec3 wc = mix(vec3(1.0, 0.68, 0.36), vec3(0.78, 0.86, 1.0), step(0.78, fract(hh * 7.3)));
-  totalEmissiveRadiance += wc * win * lit * (0.45 + 0.55 * fract(hh * 13.7)) * (0.8 + tx.r * 0.3) * 1.05; }`);
+  totalEmissiveRadiance += wc * win * lit * mix(0.45 + 0.55 * fract(hh * 13.7), 0.7, fade) * (0.8 + tx.r * 0.3) * 1.05; }`);
   };
 
   const ground = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.93, metalness: 0 });
