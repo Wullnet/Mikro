@@ -159,13 +159,14 @@ function hash3(x: number, y: number, z: number) {
 /** Kurorë peme organike nga ikosaedri me zhvendosje. */
 function canopy(g: Geo, r: number, detail: number, cx: number, cy: number, cz: number, sx: number, sy: number, sz: number, dark: RGB, light: RGB) {
   const ico = new THREE.IcosahedronGeometry(r, detail);
-  const P = ico.getAttribute('position') as THREE.BufferAttribute;
+  const P = ico.getAttribute('position') as THREE.BufferAttribute, Nn = ico.getAttribute('normal') as THREE.BufferAttribute;
   for (let i = 0; i < P.count; i++) {
     const x = P.getX(i), y = P.getY(i), z = P.getZ(i);
     const k = 1 + (hash3(Math.round(x * 100), Math.round(y * 100), Math.round(z * 100)) - 0.5) * 0.28;
     P.setXYZ(i, x * k * sx, y * k * sy, z * k * sz);
+    const nx = x / sx, ny = y / sy, nz = z / sz, l = Math.hypot(nx, ny, nz) || 1;
+    Nn.setXYZ(i, nx / l, ny / l, nz / l);
   }
-  ico.computeVertexNormals();
   const m = new THREE.Matrix4().makeTranslation(cx, cy, cz);
   const ymin = cy - r * sy, ymax = cy + r * sy;
   g.add(ico, m, (x, y, z) => {
@@ -212,19 +213,19 @@ export function lampGeo(): THREE.BufferGeometry {
 }
 export function lampHeadGeo(): THREE.BufferGeometry {
   const g = new Geo('col');
-  g.q([-0.16, 7.03, 1.35, 0.16, 7.03, 1.35, 0.16, 7.03, 2.05, -0.16, 7.03, 2.05], 0, -1, 0);
+  g.box(-0.17, 6.94, 1.36, 0.17, 7.05, 2.04, 0.25, true);
   const geo = g.build()!; geo.deleteAttribute('color');
   return geo;
 }
 /** Pellg drite në tokë para llambës. */
 export function poolGeo(): THREE.BufferGeometry {
   const g = new Geo('uv');
-  const r = 6.5, y = 0.2, cz = 2.2;
+  const r = 6.5, y = 0.03, cz = 2.2;
   g.q([-r, y, cz - r, -r, y, cz + r, r, y, cz + r, r, y, cz - r], 0, 1, 0, [0, 0, 0, 1, 1, 1, 1, 0]);
   return g.build()!;
 }
 export function blobGeo(r = 2.4): THREE.BufferGeometry {
-  const g = new Geo('uv'); const y = 0.19;
+  const g = new Geo('uv'); const y = 0.04;
   g.q([-r, y, -r, -r, y, r, r, y, r, r, y, -r], 0, 1, 0, [0, 0, 0, 1, 1, 1, 1, 0]);
   return g.build()!;
 }

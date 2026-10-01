@@ -40,9 +40,9 @@ const sedanCabin: CabinDef = {
 };
 const sedan: StyleDef = {
   L: 4.6, W: 0.9, R: 0.33, tireW: 0.225, track: 0.775, axles: [1.38, -1.36], rim: 'split', rimFrac: 0.68,
-  sill: 0.29, top: [[2.3, 0.76], [1.8, 0.85], [1.2, 0.92], [0.86, 0.95], [-0.8, 0.99], [-1.6, 1.03], [-2.3, 1.0]],
+  sill: 0.29, top: [[2.3, 0.8], [1.8, 0.87], [1.2, 0.92], [0.86, 0.95], [-0.8, 0.99], [-1.6, 1.03], [-2.3, 1.0]],
   width: [[2.3, 0.94], [1.4, 1.0], [-1.4, 1.0], [-2.3, 0.95]],
-  crown: 0.045, sh: 0.21, noseR: 0.4, tailR: 0.3, noseK: [0.28, 0.16], tailK: [0.3, 0.2], archGap: 0.055,
+  crown: 0.045, sh: 0.21, noseR: 0.4, tailR: 0.3, noseK: [0.2, 0.05], tailK: [0.26, 0.08], archGap: 0.055,
   cabin: sedanCabin,
   head: { depth: 0.55, s0: 4.35, s1: 5.75, b0: 5.2, b1: 5.85, cap: 0.24, rise: -0.03 },
   tail: { depth: 0.4, s0: 4.45, s1: 5.75, b0: 5.0, b1: 5.8, cap: 0.26, rise: 0 },
@@ -53,9 +53,9 @@ const sedan: StyleDef = {
 export const STYLES: Record<BodyStyle, StyleDef> = {
   hatch: {
     L: 3.95, W: 0.865, R: 0.31, tireW: 0.205, track: 0.745, axles: [1.21, -1.29], rim: 'five', rimFrac: 0.66,
-    sill: 0.28, top: [[1.975, 0.77], [1.5, 0.86], [0.9, 0.92], [0.62, 0.95], [-0.6, 0.98], [-1.6, 1.0], [-1.975, 0.98]],
+    sill: 0.28, top: [[1.975, 0.81], [1.5, 0.88], [0.9, 0.92], [0.62, 0.95], [-0.6, 0.98], [-1.6, 1.0], [-1.975, 0.98]],
     width: [[1.975, 0.95], [1.2, 1.0], [-1.3, 1.0], [-1.975, 0.96]],
-    crown: 0.04, sh: 0.2, noseR: 0.36, tailR: 0.22, noseK: [0.3, 0.18], tailK: [0.25, 0.2], archGap: 0.055,
+    crown: 0.04, sh: 0.2, noseR: 0.36, tailR: 0.22, noseK: [0.2, 0.05], tailK: [0.22, 0.08], archGap: 0.055,
     cabin: { zA: 0.62, zWT: -0.12, zRT: -1.42, zRB: -1.88, roof: 1.48, drop: 0.03, inset: 0.065, tumble: 0.15, crown: 0.04, belt: 'black',
       windows: [[0.5, -0.07, -0.34, -0.32], [-0.44, -0.42, -1.36, -1.24]] },
     head: { depth: 0.5, s0: 4.35, s1: 5.75, b0: 5.15, b1: 5.85, cap: 0.2, rise: -0.02 },
@@ -68,9 +68,9 @@ export const STYLES: Record<BodyStyle, StyleDef> = {
   police: { ...sedan, rim: 'six', grille: 'police' },
   coupe: {
     L: 4.5, W: 0.91, R: 0.335, tireW: 0.235, track: 0.78, axles: [1.32, -1.33], rim: 'multi', rimFrac: 0.7,
-    sill: 0.26, top: [[2.25, 0.69], [1.7, 0.79], [1.1, 0.86], [0.74, 0.9], [-0.6, 0.94], [-1.5, 0.99], [-2.25, 0.98]],
+    sill: 0.26, top: [[2.25, 0.72], [1.7, 0.8], [1.1, 0.86], [0.74, 0.9], [-0.6, 0.94], [-1.5, 0.99], [-2.25, 0.98]],
     width: [[2.25, 0.93], [1.3, 1.0], [0.0, 0.985], [-1.33, 1.01], [-2.25, 0.95]],
-    crown: 0.04, sh: 0.18, noseR: 0.42, tailR: 0.3, noseK: [0.3, 0.15], tailK: [0.35, 0.2], archGap: 0.05,
+    crown: 0.04, sh: 0.18, noseR: 0.42, tailR: 0.3, noseK: [0.2, 0.05], tailK: [0.3, 0.08], archGap: 0.05,
     cabin: { zA: 0.74, zWT: -0.12, zRT: -0.7, zRB: -1.78, roof: 1.32, drop: 0.03, inset: 0.1, tumble: 0.19, crown: 0.04, belt: 'black',
       windows: [[0.62, -0.06, -1.22, -0.68]] },
     head: { depth: 0.6, s0: 4.6, s1: 5.8, b0: 5.4, b1: 5.85, cap: 0.26, rise: -0.02 },
@@ -82,7 +82,7 @@ export const STYLES: Record<BodyStyle, StyleDef> = {
     L: 4.55, W: 0.97, R: 0.345, tireW: 0.27, track: 0.83, axles: [1.4, -1.34], rim: 'split', rimFrac: 0.74,
     sill: 0.2, top: [[2.275, 0.58], [1.9, 0.72], [1.4, 0.84], [0.84, 0.86], [0, 0.88], [-0.9, 0.93], [-1.34, 0.98], [-1.9, 0.97], [-2.275, 0.94]],
     width: [[2.275, 0.9], [1.4, 1.0], [0.4, 0.95], [-0.6, 0.97], [-1.34, 1.02], [-2.275, 0.97]],
-    crown: -0.03, sh: 0.14, noseR: 0.42, tailR: 0.26, noseK: [0.22, 0.12], tailK: [0.3, 0.2], archGap: 0.045, clad: true,
+    crown: -0.03, sh: 0.14, noseR: 0.42, tailR: 0.26, noseK: [0.16, 0.04], tailK: [0.26, 0.08], archGap: 0.045, clad: true,
     cabin: { zA: 0.84, zWT: 0.0, zRT: -0.62, zRB: -1.6, roof: 1.14, drop: 0.02, inset: 0.13, tumble: 0.2, crown: 0.035, belt: 'black', roofGlass: true,
       windows: [[0.72, 0.04, -0.86, -0.56]] },
     head: { depth: 0.62, s0: 4.75, s1: 5.75, b0: 5.45, b1: 5.85, cap: 0.22, rise: 0 },
@@ -94,7 +94,7 @@ export const STYLES: Record<BodyStyle, StyleDef> = {
     L: 4.7, W: 0.95, R: 0.38, tireW: 0.255, track: 0.8, axles: [1.42, -1.38], rim: 'six', rimFrac: 0.64,
     sill: 0.44, top: [[2.35, 0.99], [1.9, 1.07], [1.3, 1.12], [0.98, 1.15], [-1.0, 1.18], [-2.0, 1.19], [-2.35, 1.17]],
     width: [[2.35, 0.95], [1.42, 1.0], [-1.38, 1.0], [-2.35, 0.97]],
-    crown: 0.04, sh: 0.24, noseR: 0.34, tailR: 0.2, noseK: [0.22, 0.18], tailK: [0.2, 0.25], archGap: 0.07, clad: true,
+    crown: 0.04, sh: 0.24, noseR: 0.34, tailR: 0.2, noseK: [0.18, 0.06], tailK: [0.18, 0.08], archGap: 0.07, clad: true,
     cabin: { zA: 0.98, zWT: 0.24, zRT: -1.92, zRB: -2.24, roof: 1.8, drop: 0.04, inset: 0.075, tumble: 0.13, crown: 0.035, belt: 'chrome',
       windows: [[0.86, 0.3, -0.36, -0.34], [-0.45, -0.43, -1.24, -1.22], [-1.34, -1.32, -2.0, -1.86]] },
     head: { depth: 0.45, s0: 4.4, s1: 5.75, b0: 5.1, b1: 5.8, cap: 0.26, rise: 0 },
@@ -105,7 +105,7 @@ export const STYLES: Record<BodyStyle, StyleDef> = {
   pickup: {
     L: 5.3, W: 0.97, R: 0.39, tireW: 0.265, track: 0.82, axles: [1.75, -1.52], rim: 'six', rimFrac: 0.62,
     sill: 0.5, top: [[2.65, 1.05], [2.1, 1.14], [1.4, 1.19], [1.02, 1.2], [-0.58, 1.22], [-0.68, 1.0], [-2.65, 1.0]],
-    crown: 0.03, sh: 0.24, noseR: 0.3, tailR: 0.12, noseK: [0.2, 0.2], tailK: [0.15, 0.2], archGap: 0.075,
+    crown: 0.03, sh: 0.24, noseR: 0.3, tailR: 0.12, noseK: [0.15, 0.06], tailK: [0.15, 0.08], archGap: 0.075,
     cabin: { zA: 1.02, zWT: 0.32, zRT: -0.5, zRB: -0.6, capR: 0.06, roof: 1.88, inset: 0.08, tumble: 0.12, crown: 0.03, belt: 'black',
       windows: [[0.9, 0.37, 0.0, 0.0], [-0.08, -0.08, -0.46, -0.46]] },
     head: { depth: 0.4, s0: 4.3, s1: 5.8, b0: 5.0, b1: 5.85, cap: 0.3, rise: 0 },
@@ -116,7 +116,7 @@ export const STYLES: Record<BodyStyle, StyleDef> = {
   van: {
     L: 5.1, W: 0.99, R: 0.34, tireW: 0.225, track: 0.84, axles: [1.72, -1.58], rim: 'steel', rimFrac: 0.6,
     sill: 0.36, top: [[2.55, 0.98], [2.25, 1.1], [1.75, 1.2], [-2.55, 1.22]],
-    crown: 0.03, sh: 0.22, noseR: 0.3, tailR: 0.1, noseK: [0.25, 0.2], tailK: [0.1, 0.15], archGap: 0.06, clad: true,
+    crown: 0.03, sh: 0.22, noseR: 0.3, tailR: 0.1, noseK: [0.2, 0.08], tailK: [0.1, 0.08], archGap: 0.06, clad: true,
     cabin: { zA: 1.74, zWT: 1.0, zRT: -2.5, zRB: -2.53, capR: 0.1, roof: 2.32, inset: 0.025, tumble: 0.07, crown: 0.04, belt: 'black',
       windows: [[1.62, 1.04, 0.42, 0.44]] },
     head: { depth: 0.3, s0: 4.5, s1: 5.85, b0: 5.0, b1: 5.85, cap: 0.22, rise: 0 },
@@ -127,7 +127,7 @@ export const STYLES: Record<BodyStyle, StyleDef> = {
   furgon: {
     L: 5.45, W: 0.99, R: 0.34, tireW: 0.215, track: 0.84, axles: [1.78, -1.62], rim: 'steel', rimFrac: 0.58,
     sill: 0.34, top: [[2.725, 0.95], [2.4, 1.05], [1.85, 1.14], [-2.725, 1.16]],
-    crown: 0.03, sh: 0.2, noseR: 0.32, tailR: 0.1, noseK: [0.22, 0.18], tailK: [0.1, 0.15], archGap: 0.06,
+    crown: 0.03, sh: 0.2, noseR: 0.32, tailR: 0.1, noseK: [0.2, 0.08], tailK: [0.1, 0.08], archGap: 0.06,
     cabin: { zA: 1.86, zWT: 1.08, zRT: -2.66, zRB: -2.69, capR: 0.12, roof: 2.42, inset: 0.02, tumble: 0.08, crown: 0.05, belt: 'black',
       windows: [[1.74, 1.12, 0.55, 0.55], [0.42, 0.42, -0.36, -0.36], [-0.46, -0.46, -1.24, -1.24], [-1.34, -1.34, -2.08, -2.08], [-2.18, -2.18, -2.56, -2.5]] },
     head: { depth: 0.25, s0: 4.3, s1: 5.7, b0: 4.6, b1: 5.7, cap: 0.2, rise: 0 },

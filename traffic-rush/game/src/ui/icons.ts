@@ -52,6 +52,12 @@ export const IC = {
   parking: s('<rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="M9.5 16.5v-9h3.2a2.7 2.7 0 0 1 0 5.4H9.5"/>'),
   stunt: s('<path d="M2.5 19.5h19M4 19.5L17 11v8.5"/><path d="M16 4.5l2.5 2.5M19.5 3l-1 3.5"/>'),
   person: s('<circle cx="12" cy="7.5" r="3.5"/><path d="M5 20.5a7 7 0 0 1 14 0"/>'),
+  // Bizneset
+  cup: s('<path d="M5 8.5h11v4.5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 9.5h1.5a2.5 2.5 0 0 1 0 5H16M8.5 3.5c0 1 1 1.3 1 2.5M12 3.5c0 1 1 1.3 1 2.5M4 21h14"/>'),
+  drop: s('<path d="M12 3.5s6 6.6 6 10.5a6 6 0 0 1-12 0c0-3.9 6-10.5 6-10.5z"/><path d="M9 14.5a3 3 0 0 0 3 3"/>'),
+  tag: s('<path d="M3.5 12.5V4h8.5l8.5 8.5-8.5 8.5z"/><circle cx="8" cy="8.5" r="1.6"/>'),
+  chevR: s('<path d="M9 5l7 7-7 7"/>'),
+  retry: s('<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 4.5v4h4"/>'),
   // Kontrollet
   wheelCtl: s('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2"/><path d="M3.6 11h6.4M14 11h6.4M12 14v6.4"/>'),
   tiltCtl: s('<rect x="7.5" y="3" width="9" height="18" rx="2" transform="rotate(-18 12 12)"/><path d="M2.5 15.5a10 10 0 0 0 5 5.5M21.5 8.5a10 10 0 0 0-5-5.5"/>'),

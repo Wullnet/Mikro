@@ -188,7 +188,7 @@ export function makeAtlas(seed: number): Atlas {
     white: (x, y) => { rect(x, y, S, S, '#ffffff'); },
     roofGravel: (x, y) => {
       rect(x, y, S, S, '#8e8c87');
-      for (let k = 0; k < 900; k++) { const c = 110 + R() * 60 | 0; g.fillStyle = `rgb(${c},${c - 2},${c - 6})`; g.fillRect(x + R() * S, y + R() * S, 2, 2); }
+      for (let k = 0; k < 260; k++) { const c = 110 + R() * 60 | 0; g.fillStyle = `rgb(${c},${c - 2},${c - 6})`; g.fillRect(x + R() * S, y + R() * S, 2, 2); }
     },
     roofTile: (x, y) => {
       rect(x, y, S, S, '#a9482a');
@@ -275,20 +275,19 @@ export function makeAtlas(seed: number): Atlas {
     shop.push(tileOf(x, y, 256, 128));
   });
 
-  // Bashko ngjyrën + maskën; pak zhurmë për material.
-  const img = g.getImageData(0, 0, AW, AH).data, mk = m.getImageData(0, 0, AW, AH).data;
-  const data = new Uint8Array(AW * AH * 4);
-  let s = seed | 1;
-  for (let i = 0; i < data.length; i += 4) {
-    s = (s * 1664525 + 1013904223) | 0;
-    const n = ((s >>> 24) - 128) / 128 * 5;
-    const mm = mk[i] / 255;
-    const k = n * (1 - mm * 0.7);
-    data[i] = Math.max(0, Math.min(255, img[i] + k));
-    data[i + 1] = Math.max(0, Math.min(255, img[i + 1] + k));
-    data[i + 2] = Math.max(0, Math.min(255, img[i + 2] + k));
-    data[i + 3] = 255 - Math.round(mm * 127);
+  // Zhurmë e lehtë mbi muret (një kanavacë 128 px e vizatuar mbi çdo qelizë).
+  {
+    const nc = document.createElement('canvas'); nc.width = nc.height = 128;
+    const ng = nc.getContext('2d')!, id = ng.createImageData(128, 128);
+    for (let i = 0; i < id.data.length; i += 4) { const v = (R() * 255) | 0; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 14; }
+    ng.putImageData(id, 0, 0);
+    for (let y = 0; y < AH; y += 128) for (let x = 0; x < AW; x += 128) g.drawImage(nc, x, y);
   }
+  // Bashko ngjyrën + maskën (alfa = 255 mur, ~128 xham).
+  const img = g.getImageData(0, 0, AW, AH).data, mk = m.getImageData(0, 0, AW, AH).data;
+  const data = new Uint8Array(img.buffer.slice(0));
+  const d32 = new Uint32Array(data.buffer), m32 = new Uint32Array(mk.buffer);
+  for (let i = 0; i < d32.length; i++) d32[i] = (d32[i] & 0x00ffffff) | ((255 - ((m32[i] & 0xff) >> 1)) << 24);
   const tex = new THREE.DataTexture(data, AW, AH, THREE.RGBAFormat);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.generateMipmaps = true;
@@ -299,43 +298,43 @@ export function makeAtlas(seed: number): Atlas {
   return { tex, c: cells, pat, shop };
 }
 
-/** Zhurmë vlerash periodike. */
-function makeNoise(R: () => number) {
-  const cache = new Map<number, Float32Array>();
-  return (x: number, y: number, P: number) => {
-    let L = cache.get(P);
-    if (!L) { L = new Float32Array(P * P); for (let i = 0; i < L.length; i++) L[i] = R(); cache.set(P, L); }
-    const xi = Math.floor(x), yi = Math.floor(y);
-    let fx = x - xi, fy = y - yi;
-    fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy);
-    const x0 = ((xi % P) + P) % P, y0 = ((yi % P) + P) % P, x1 = (x0 + 1) % P, y1 = (y0 + 1) % P;
-    const a = L[y0 * P + x0], b = L[y0 * P + x1], c = L[y1 * P + x0], d = L[y1 * P + x1];
-    return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
-  };
+/** Shtresë zhurme vlerash periodike (N×N, perioda P qeliza). */
+function noiseLayer(N: number, P: number, R: () => number): Float32Array {
+  const L = new Float32Array(P * P);
+  for (let i = 0; i < L.length; i++) L[i] = R();
+  const out = new Float32Array(N * N), k = P / N;
+  const sx = new Float32Array(N), ix0 = new Int32Array(N), ix1 = new Int32Array(N);
+  for (let x = 0; x < N; x++) { const f = x * k, i = Math.floor(f), t = f - i; sx[x] = t * t * (3 - 2 * t); ix0[x] = i % P; ix1[x] = (i + 1) % P; }
+  for (let y = 0; y < N; y++) {
+    const r0 = ix0[y] * P, r1 = ix1[y] * P, ty = sx[y];
+    for (let x = 0; x < N; x++) {
+      const a = L[r0 + ix0[x]], b = L[r0 + ix1[x]], c = L[r1 + ix0[x]], d = L[r1 + ix1[x]], tx = sx[x];
+      const top = a + (b - a) * tx, bot = c + (d - c) * tx;
+      out[y * N + x] = top + (bot - top) * ty;
+    }
+  }
+  return out;
 }
 
 /** Detajet e tokës (4 m për periodë): R asfalt, G pllaka trotuari, B bar, A gurë sheshi. */
 export function makeDetailTexture(seed: number): THREE.DataTexture {
-  const N = 512, R = rng(seed ^ 0xd37a11), vn = makeNoise(R);
+  const N = 512, R = rng(seed ^ 0xd37a11);
+  const n64 = noiseLayer(N, 64, R), n16 = noiseLayer(N, 16, R), n32 = noiseLayer(N, 32, R), n8 = noiseLayer(N, 8, R), n24 = noiseLayer(N, 24, R);
   const d = new Uint8Array(N * N * 4);
   const tileB = new Float32Array(64), slabB = new Float32Array(64);
   for (let i = 0; i < 64; i++) { tileB[i] = (R() - 0.5) * 0.16; slabB[i] = (R() - 0.5) * 0.2; }
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-    const u = x / N, v = y / N, f = R();
-    // asfalti
-    let a = 0.5 * vn(u * 64, v * 64, 64) + 0.3 * vn(u * 16, v * 16, 16) + 0.2 * f;
+    const i = y * N + x, f = R();
+    let a = 0.5 * n64[i] + 0.3 * n16[i] + 0.2 * f;
     if (f > 0.992) a += 0.35;
-    // pllakat 0.5 m
     const tx = x & 63, ty = y & 63, ti = ((x >> 6) + (y >> 6) * 8) & 63;
-    let t = 0.72 + tileB[ti] + (f - 0.5) * 0.12 + (vn(u * 32, v * 32, 32) - 0.5) * 0.1;
+    let t = 0.72 + tileB[ti] + (f - 0.5) * 0.12 + (n32[i] - 0.5) * 0.1;
     if (tx < 2 || ty < 2) t = 0.35;
-    // bari
-    const gb = 0.45 * vn(u * 8, v * 8, 8) + 0.3 * vn(u * 32, v * 32, 32) + 0.25 * f;
-    // pllaka guri 1 m × 0.5 m (lidhje e zhvendosur)
-    const row = y >> 6, sx = (x + (row & 1) * 64) & 511, sxi = (sx >> 7) + row * 4;
-    let st = 0.72 + slabB[sxi & 63] + (f - 0.5) * 0.08 + (vn(u * 24, v * 24, 24) - 0.5) * 0.12;
-    if ((sx & 127) < 2 || (y & 63) < 2) st = 0.42;
-    const o = (y * N + x) * 4;
+    const gb = 0.45 * n8[i] + 0.3 * n32[i] + 0.25 * f;
+    const row = y >> 6, sxp = (x + (row & 1) * 64) & 511, sxi = (sxp >> 7) + row * 4;
+    let st = 0.72 + slabB[sxi & 63] + (f - 0.5) * 0.08 + (n24[i] - 0.5) * 0.12;
+    if ((sxp & 127) < 2 || (y & 63) < 2) st = 0.42;
+    const o = i * 4;
     d[o] = Math.min(255, a * 255); d[o + 1] = Math.min(255, t * 255); d[o + 2] = Math.min(255, gb * 255); d[o + 3] = Math.min(255, st * 255);
   }
   const tex = new THREE.DataTexture(d, N, N, THREE.RGBAFormat);
@@ -347,12 +346,10 @@ export function makeDetailTexture(seed: number): THREE.DataTexture {
 
 /** Harta e normaleve për ujin (valë të buta). */
 export function makeWaterNormal(seed: number): THREE.DataTexture {
-  const N = 128, R = rng(seed ^ 0x3a7e5), vn = makeNoise(R);
+  const N = 128, R = rng(seed ^ 0x3a7e5);
+  const a8 = noiseLayer(N, 8, R), a16 = noiseLayer(N, 16, R), a32 = noiseLayer(N, 32, R);
   const h = new Float32Array(N * N);
-  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-    const u = x / N, v = y / N;
-    h[y * N + x] = vn(u * 8, v * 8, 8) * 0.6 + vn(u * 16, v * 16, 16) * 0.3 + vn(u * 32, v * 32, 32) * 0.1;
-  }
+  for (let i = 0; i < N * N; i++) h[i] = a8[i] * 0.6 + a16[i] * 0.3 + a32[i] * 0.1;
   const d = new Uint8Array(N * N * 4);
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const dx = (h[y * N + ((x + 1) % N)] - h[y * N + ((x - 1 + N) % N)]) * 6;
@@ -452,11 +449,12 @@ diffuseColor.rgb *= tx.rgb * mix(vTint, vec3(1.0), win);`)
       .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = mix(roughness, 0.1, win);')
       .replace('#include <metalnessmap_fragment>', 'float metalnessFactor = mix(metalness, 0.55, win);')
       .replace('#include <emissivemap_fragment>', `
-{ vec2 cell = floor(vAUv + 0.001) + vec2(vW.x * 7.31, vW.x * 3.17);
+{ float sc = vTile.z > 0.09 ? 4.0 : 1.0;
+  vec2 cell = floor(vAUv * sc + 0.001) + vec2(vW.x * 7.31, vW.x * 3.17);
   float hh = hsh(cell);
   float lit = step(hh, vW.y) * uNight;
   vec3 wc = mix(vec3(1.0, 0.68, 0.36), vec3(0.78, 0.86, 1.0), step(0.78, fract(hh * 7.3)));
-  totalEmissiveRadiance += wc * win * lit * (0.55 + 0.7 * fract(hh * 13.7)) * (0.6 + tx.r * 0.8) * 1.6; }`);
+  totalEmissiveRadiance += wc * win * lit * (0.45 + 0.55 * fract(hh * 13.7)) * (0.8 + tx.r * 0.3) * 1.05; }`);
   };
 
   const ground = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.93, metalness: 0 });
@@ -485,7 +483,7 @@ uniform sampler2D uDetail; varying float vPat; varying vec2 vGW;`)
   const misc = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.78, metalness: 0.02 });
   const plant = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, metalness: 0 });
   const water = new THREE.MeshStandardMaterial({ color: 0x2f5f66, roughness: 0.06, metalness: 0.2, normalMap: waterTex, normalScale: new THREE.Vector2(0.28, 0.28) });
-  const lampHead = new THREE.MeshStandardMaterial({ color: 0xf2efe6, emissive: 0xffc98a, emissiveIntensity: 0, roughness: 0.4 });
+  const lampHead = new THREE.MeshStandardMaterial({ color: 0xf2efe6, emissive: 0xffd7a0, emissiveIntensity: 0, roughness: 0.4 });
   const pool = new THREE.MeshBasicMaterial({ map: radial, color: 0xffb466, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false, fog: true });
   pool.polygonOffset = true; pool.polygonOffsetFactor = -2; pool.polygonOffsetUnits = -2;
   const blob = new THREE.MeshBasicMaterial({ map: radial, color: 0x000000, transparent: true, opacity: 0.32, depthWrite: false });
