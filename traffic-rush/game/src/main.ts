@@ -161,6 +161,8 @@ function start() {
   // Leja për anim (tilt) në iOS kërkohet nga një prekje e përdoruesit.
   let needTiltPermission = settings.controls === 'tilt';
   addEventListener('pointerdown', () => {
+    // iOS: zëri të dëgjohet edhe kur çelësi i ziles është në heshtje.
+    try { (navigator as any).audioSession && ((navigator as any).audioSession.type = 'playback'); } catch { /* s'mbështetet */ }
     audio.unlock();
     if (needTiltPermission) {
       needTiltPermission = false;
