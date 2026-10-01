@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<title>Kontrollet & Zëri — demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Saira+Extra+Condensed:wght@600;700;800&display=swap">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #101318; color: #f4f1e8; overscroll-behavior: none; touch-action: none;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; font: 600 12px Barlow, Arial, sans-serif; }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  #controls { position: fixed; inset: 0; pointer-events: none; }
+  #dbg { position: fixed; left: calc(env(safe-area-inset-left) + 8px); right: calc(env(safe-area-inset-right) + 8px); top: calc(env(safe-area-inset-top) + 8px);
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; pointer-events: none; }
+  #dbg > * { pointer-events: auto; background: rgba(14,17,22,.78); border: 1px solid rgba(255,255,255,.16); border-radius: 10px; padding: 6px 8px; }
+  #bar { flex: 1 1 100%; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  #bar h1 { font: 800 17px "Saira Extra Condensed", sans-serif; letter-spacing: .05em; margin: 0 6px 0 0; color: #ff5a2e; }
+  #out { margin: 0; font: 600 11.5px/1.35 ui-monospace, Menlo, monospace; white-space: pre; min-width: 150px; }
+  #snd { flex: 1 1 180px; display: flex; flex-wrap: wrap; gap: 5px; align-content: flex-start; }
+  button { font: 700 12px Barlow, Arial, sans-serif; color: #f4f1e8; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22);
+    border-radius: 7px; padding: 5px 8px; touch-action: manipulation; }
+  button.on { background: #ff5a2e; border-color: #ffb199; color: #fff; }
+  @media (orientation: landscape) { #snd { max-width: 46vw; } }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="controls"></div>
+<div id="dbg">
+  <div id="bar"><h1>KONTROLLET</h1><button data-s="wheel">Timon</button><button data-s="tilt">Anim</button><button data-s="lanes">Korsi</button></div>
+  <pre id="out"></pre>
+  <div id="snd"></div>
+</div>
+<script type="module" src="/src/demos/input.ts"></script>
+</body>
+</html>
