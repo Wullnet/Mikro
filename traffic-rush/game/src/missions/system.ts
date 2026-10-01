@@ -307,7 +307,7 @@ export function createMissions(d: MissionDeps): MissionsX {
       const av = availableJobs(), si = storyIndex(), story = si >= 0 ? av.find(j => j.def.id === career[si].def.id) : undefined;
       const px = p?.x ?? city.playerSpawn.x, pz = p?.z ?? city.playerSpawn.z;
       const sorted = av.filter(j => j !== story).sort((a, b) => Math.hypot(a.def.start.x - px, a.def.start.z - pz) - Math.hypot(b.def.start.x - px, b.def.start.z - pz));
-      for (const j of (story ? [story, ...sorted] : sorted).slice(0, 12)) out.push({ id: j.def.id, kind: 'mission', x: j.def.start.x, z: j.def.start.z, radius: 6, label: `${KIND_LABEL[j.def.kind]}: ${j.def.title}` });
+      for (const j of (story ? [story, ...sorted] : sorted).slice(0, 12)) out.push({ id: j.def.id, kind: 'mission', x: j.def.start.x, z: j.def.start.z, radius: 6, label: j.def.title.startsWith(KIND_LABEL[j.def.kind]) ? j.def.title : `${KIND_LABEL[j.def.kind]}: ${j.def.title}` });
       for (const g of city.pois) if (g.kind === 'garage') out.push({ id: 'garage-' + g.id, kind: 'garage', x: g.x, z: g.z, radius: 6, label: g.name });
       const own = new Set(prog.profile.properties);
       for (const b of PROPERTIES) out.push({ id: 'biz-' + b.id, kind: 'business', x: b.x, z: b.z, radius: 6, label: b.name + (own.has(b.id) ? ' ✓' : ` · ${b.price} L`) });

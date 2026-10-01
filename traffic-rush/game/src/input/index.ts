@@ -424,6 +424,7 @@ export function createInput(root: HTMLElement, deps: InputDeps): GameInput {
     // Pamja: karburanti i nitros, "MBRAPA", animi, kthesa.
     if (p) {
       const f = Math.round(clamp(p.nitroFuel, 0, 1) * 50) / 50;
+      nitroEl.style.visibility = p.spec.nitro ? '' : 'hidden';
       if (f !== fuelShown) { fuelShown = f; nitroEl.style.setProperty('--f', String(f)); nitroEl.classList.toggle('empty', f < 0.02); }
       const rev = p.speed < -0.3;
       if (rev !== revShown) { revShown = rev; brakeLabel.textContent = rev ? 'MBRAPA' : 'FRENA'; }
